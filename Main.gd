@@ -38,14 +38,17 @@ func add_row():
 					$TileMap.set_cell(x, y-1, block)
 					$TileMap.set_cell(x, y, -1)
 				else:
-					print("game over")
+					print("GAME OVER")
 					return
 	for i in range(6):
 		$TileMap.set_cell(i,9, new_row[i])
 
 func draw_cursor():
 	var top_block = get_top_block()
-	$crosshair.position = Vector2(56 + (16 * col), 40 + (16 * top_block))
+	if top_block == 12:
+		$crosshair.position = Vector2(56 + (16 * col), 184)
+	else:
+		$crosshair.position = Vector2(56 + (16 * col), 40 + (16 * top_block))
 	for i in range(6):
 		$TileMap.set_cell(i, -1, 5)
 	$TileMap.set_cell(col, -1, selected)
@@ -58,13 +61,18 @@ func get_top_block():
 
 func grab_block():
 	var top_block = get_top_block()
-	if top_block != 12:
+	if top_block == 12:
+		print("Trying to grab NOTHING")
+	else:
 		selected = $TileMap.get_cell(col, top_block)
 		$TileMap.set_cell(col, top_block, -1)
 
 func drop_block():
 	var top_block = get_top_block() - 1
-	$TileMap.set_cell(col, top_block, selected)
+	if top_block == 11:
+		$TileMap.set_cell(col, 9, selected)
+	else:
+		$TileMap.set_cell(col, top_block, selected)
 	selected = 5
 
 func check_hit():
@@ -83,7 +91,7 @@ func check_hit():
 					destroy_blocks.append(Vector2(x,y+1))
 	for destroy in destroy_blocks:
 		$TileMap.set_cellv(destroy, -1)
-		print("hit!")
+		print("score!")
 
 func gravity():
 	pass
