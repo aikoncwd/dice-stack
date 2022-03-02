@@ -1,15 +1,22 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://img/tileset.png" type="Texture" id=2]
 [ext_resource path="res://crosshair.tscn" type="PackedScene" id=3]
+[ext_resource path="res://img/bar1.png" type="Texture" id=4]
+[ext_resource path="res://img/bar2.png" type="Texture" id=5]
+[ext_resource path="res://dogica.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://sounds/new_line.wav" type="AudioStream" id=7]
+[ext_resource path="res://sounds/drop.wav" type="AudioStream" id=8]
+[ext_resource path="res://sounds/pick.wav" type="AudioStream" id=9]
+[ext_resource path="res://sounds/score.wav" type="AudioStream" id=10]
 
 [sub_resource type="TileSet" id=1]
 0/name = "tileset.png 0"
 0/texture = ExtResource( 2 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
-0/region = Rect2( 16, 0, 16, 16 )
+0/region = Rect2( 0, 0, 16, 16 )
 0/tile_mode = 0
 0/occluder_offset = Vector2( 0, 0 )
 0/navigation_offset = Vector2( 0, 0 )
@@ -23,7 +30,7 @@
 1/texture = ExtResource( 2 )
 1/tex_offset = Vector2( 0, 0 )
 1/modulate = Color( 1, 1, 1, 1 )
-1/region = Rect2( 0, 0, 16, 16 )
+1/region = Rect2( 16, 0, 16, 16 )
 1/tile_mode = 0
 1/occluder_offset = Vector2( 0, 0 )
 1/navigation_offset = Vector2( 0, 0 )
@@ -90,15 +97,115 @@
 5/shapes = [  ]
 5/z_index = 0
 
+[sub_resource type="DynamicFont" id=2]
+size = 8
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 6 )
+
+[sub_resource type="Theme" id=3]
+Label/fonts/font = SubResource( 2 )
+
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
 
 [node name="TileMap" type="TileMap" parent="."]
-position = Vector2( 48, 32 )
+position = Vector2( 32, 32 )
 tile_set = SubResource( 1 )
 cell_size = Vector2( 16, 16 )
 format = 1
-tile_data = PoolIntArray( -65539, 5, 0, -65538, 5, 0, -65537, 5, 0, -131072, 5, 0, -131071, 5, 0, -131070, 5, 0, -131069, 5, 0, -131068, 5, 0, -131067, 5, 0, -131066, 5, 0, -131065, 5, 0, -131064, 5, 0, -3, 5, 0, -2, 5, 0, -1, 5, 0, -65536, 5, 0, -65535, 5, 0, -65534, 5, 0, -65533, 5, 0, -65532, 5, 0, -65531, 5, 0, -65530, 5, 0, -65529, 5, 0, -65528, 5, 0, 65533, 5, 0, 65534, 5, 0, 65535, 5, 0, 6, 5, 0, 7, 5, 0, 8, 5, 0, 131069, 5, 0, 131070, 5, 0, 131071, 5, 0, 65542, 5, 0, 65543, 5, 0, 65544, 5, 0, 196605, 5, 0, 196606, 5, 0, 196607, 5, 0, 131078, 5, 0, 131079, 5, 0, 131080, 5, 0, 262141, 5, 0, 262142, 5, 0, 262143, 5, 0, 196614, 5, 0, 196615, 5, 0, 196616, 5, 0, 327677, 5, 0, 327678, 5, 0, 327679, 5, 0, 262150, 5, 0, 262151, 5, 0, 262152, 5, 0, 393213, 5, 0, 393214, 5, 0, 393215, 5, 0, 327686, 5, 0, 327687, 5, 0, 327688, 5, 0, 458749, 5, 0, 458750, 5, 0, 458751, 5, 0, 393222, 5, 0, 393223, 5, 0, 393224, 5, 0, 524285, 5, 0, 524286, 5, 0, 524287, 5, 0, 458758, 5, 0, 458759, 5, 0, 458760, 5, 0, 589821, 5, 0, 589822, 5, 0, 589823, 5, 0, 524294, 5, 0, 524295, 5, 0, 524296, 5, 0, 655357, 5, 0, 655358, 5, 0, 655359, 5, 0, 589830, 5, 0, 589831, 5, 0, 589832, 5, 0, 720893, 5, 0, 720894, 5, 0, 720895, 5, 0, 655360, 5, 0, 655361, 5, 0, 655362, 5, 0, 655363, 5, 0, 655364, 5, 0, 655365, 5, 0, 655366, 5, 0, 655367, 5, 0, 655368, 5, 0, 786429, 5, 0, 786430, 5, 0, 786431, 5, 0, 720902, 5, 0, 720903, 5, 0, 720904, 5, 0, 851965, 5, 0, 851966, 5, 0, 851967, 5, 0, 786432, 5, 0, 786433, 5, 0, 786434, 5, 0, 786435, 5, 0, 786436, 5, 0, 786437, 5, 0, 786438, 5, 0, 786439, 5, 0, 786440, 5, 0 )
+tile_data = PoolIntArray( -65538, 5, 0, -65537, 5, 0, -131072, 5, 0, -131071, 5, 0, -131070, 5, 0, -131069, 5, 0, -131068, 5, 0, -131067, 5, 0, -131066, 5, 0, -131065, 5, 0, -131064, 5, 0, -2, 5, 0, -1, 5, 0, -65536, 5, 0, -65535, 5, 0, -65534, 5, 0, -65533, 5, 0, -65532, 5, 0, -65531, 5, 0, -65530, 5, 0, -65529, 5, 0, -65528, 5, 0, 65534, 5, 0, 65535, 5, 0, 7, 5, 0, 8, 5, 0, 131070, 5, 0, 131071, 5, 0, 65543, 5, 0, 65544, 5, 0, 196606, 5, 0, 196607, 5, 0, 131079, 5, 0, 131080, 5, 0, 262142, 5, 0, 262143, 5, 0, 196615, 5, 0, 196616, 5, 0, 327678, 5, 0, 327679, 5, 0, 262151, 5, 0, 262152, 5, 0, 393214, 5, 0, 393215, 5, 0, 327687, 5, 0, 327688, 5, 0, 458750, 5, 0, 458751, 5, 0, 393223, 5, 0, 393224, 5, 0, 524286, 5, 0, 524287, 5, 0, 458759, 5, 0, 458760, 5, 0, 589822, 5, 0, 589823, 5, 0, 524295, 5, 0, 524296, 5, 0, 655358, 5, 0, 655359, 5, 0, 589824, 5, 0, 589825, 5, 0, 589826, 5, 0, 589827, 5, 0, 589828, 5, 0, 589829, 5, 0, 589830, 5, 0, 589831, 5, 0, 589832, 5, 0, 720894, 5, 0, 720895, 5, 0, 655367, 5, 0, 655368, 5, 0, 786430, 5, 0, 786431, 5, 0, 720896, 5, 0, 720897, 5, 0, 720898, 5, 0, 720899, 5, 0, 720900, 5, 0, 720901, 5, 0, 720902, 5, 0, 720903, 5, 0, 720904, 5, 0, 851966, 5, 0, 851967, 5, 0, 786432, 5, 0, 786433, 5, 0, 786434, 5, 0, 786435, 5, 0, 786436, 5, 0, 786437, 5, 0, 786438, 5, 0, 786439, 5, 0, 786440, 5, 0, 917502, 5, 0, 917503, 5, 0, 851968, 5, 0, 851969, 5, 0, 851970, 5, 0, 851971, 5, 0, 851972, 5, 0, 851973, 5, 0, 851974, 5, 0, 851975, 5, 0, 851976, 5, 0 )
 
 [node name="crosshair" parent="." instance=ExtResource( 3 )]
-position = Vector2( 56, 40 )
+position = Vector2( 40, 168 )
+
+[node name="ProgressBar" type="TextureProgress" parent="."]
+margin_left = 32.0
+margin_top = 213.0
+margin_right = 144.0
+margin_bottom = 223.0
+max_value = 5.0
+value = 5.0
+texture_under = ExtResource( 5 )
+texture_progress = ExtResource( 4 )
+fill_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.1
+autostart = true
+
+[node name="Label" type="Label" parent="."]
+margin_left = 32.0
+margin_right = 144.0
+margin_bottom = 32.0
+theme = SubResource( 3 )
+text = "0"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="label_gameover" type="Label" parent="."]
+visible = false
+margin_left = 48.0
+margin_top = 120.0
+margin_right = 144.0
+margin_bottom = 136.0
+theme = SubResource( 3 )
+text = "GAME OVER"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="new_line" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+
+[node name="pick" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 9 )
+
+[node name="drop" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
+
+[node name="score" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 10 )
+
+[node name="Button" type="Button" parent="."]
+margin_left = 16.0
+margin_top = 224.0
+margin_right = 48.0
+margin_bottom = 244.0
+text = "<"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button2" type="Button" parent="."]
+margin_left = 112.0
+margin_top = 224.0
+margin_right = 160.0
+margin_bottom = 244.0
+text = "#"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button3" type="Button" parent="."]
+margin_left = 56.0
+margin_top = 224.0
+margin_right = 88.0
+margin_bottom = 244.0
+text = ">"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_Button2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_Button3_pressed"]
