@@ -18,8 +18,8 @@ config/icon="res://icon.png"
 
 window/size/width=176
 window/size/height=256
-window/size/test_width=704
-window/size/test_height=1024
+window/size/test_width=528
+window/size/test_height=768
 window/stretch/mode="2d"
 window/stretch/aspect="keep"
 

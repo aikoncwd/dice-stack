@@ -5,17 +5,14 @@ var col = 0
 var selected = 5
 var score = 0
 var gameover = false
+var gamestate = "title"
 
-signal blinked
+signal animation_finish
 
 func _ready():
 	randomize()
-	generate_new_row()
-	add_row()
-	generate_new_row()
-	draw_cursor()
 
-func generate_new_row():
+func generate_new_row(starting = false):
 	var last_dice
 	var n
 	new_row.clear()
@@ -31,7 +28,7 @@ func generate_new_row():
 			new_row.append(n)
 			last_dice = n
 		$TileMap.set_cell(i, 10, new_row[i])
-	$new_line.play()
+	if !starting: $new_line.play()
 
 func add_row():
 	for effect in get_tree().get_nodes_in_group("effects"):
@@ -125,7 +122,7 @@ func gravity():
 	if fall: check_hit()
 
 func update_score():
-	$Label.text = str(score)
+	$label_score.text = str(score)
 
 func spawn_effect(pos : Vector2, block_color):
 	var effect = preload("res://vanish_effect.tscn").instance()
@@ -133,51 +130,81 @@ func spawn_effect(pos : Vector2, block_color):
 	effect.block_color = block_color
 	add_child(effect)
 
+func animation():
+	for y in range(9):
+		for x in range(7):
+			$TileMap.set_cell(x, y, -1)
+			yield(get_tree().create_timer(0.01), "timeout")
+	for i in range(7):
+			$TileMap.set_cell(i, 10, -1)
+			yield(get_tree().create_timer(0.05), "timeout")
+	emit_signal("animation_finish")
+
+
 func _input(event):
-	if Input.is_action_just_pressed("ui_down") and !gameover:
-		add_row()
-		gravity()
-		generate_new_row()
-		check_hit()
-		draw_cursor()
-		$ProgressBar.value = 6
-	if Input.is_action_just_pressed("ui_right") and !gameover:
-		col += 1
-		if col > 6: col = 0
-		draw_cursor()
-	if Input.is_action_just_pressed("ui_left") and !gameover:
-		col -= 1
-		if col < 0: col = 6
-		draw_cursor()
-	if Input.is_action_just_pressed("fast_right") and !gameover:
-		col = 6
-		draw_cursor()
-	if Input.is_action_just_pressed("fast_left") and !gameover:
-		col = 0
-		draw_cursor()
-	if Input.is_action_just_pressed("ui_accept"):
-		if  !gameover:
-			if selected == 5:
-				$pick.play()
-				grab_block()
-			else:
-				drop_block()
+	match gamestate:
+		"title":
+			if Input.is_action_just_pressed("ui_accept"):
+				$box_titulo.visible = false
+				animation()
+				yield(self, "animation_finish")
+				
+				generate_new_row(true)
+				add_row()
+				generate_new_row(true)
+				draw_cursor()
+				
+				$crosshair.visible = true
+				$ProgressBar.visible = true
+				$label_score.visible = true
+				$Timer.start()
+				
+				gamestate = "gaming"
+		"gaming":
+			if Input.is_action_just_pressed("ui_down") and !gameover:
+				add_row()
+				gravity()
+				generate_new_row()
 				check_hit()
-			draw_cursor()
-		else:
-			gameover = false
-			$label_gameover.visible = false
-			$ProgressBar.value = 6
-			new_row.clear()
-			col = 0
-			selected = 5
-			score = 0
-			update_score()
-			for y in range(8):
-				for x in range(7):
-					$TileMap.set_cell(x, y, -1)
-			_ready()
-			$Timer.start()
+				draw_cursor()
+				$ProgressBar.value = $ProgressBar.max_value
+			if Input.is_action_just_pressed("ui_right") and !gameover:
+				col += 1
+				if col > 6: col = 0
+				draw_cursor()
+			if Input.is_action_just_pressed("ui_left") and !gameover:
+				col -= 1
+				if col < 0: col = 6
+				draw_cursor()
+			if Input.is_action_just_pressed("fast_right") and !gameover:
+				col = 6
+				draw_cursor()
+			if Input.is_action_just_pressed("fast_left") and !gameover:
+				col = 0
+				draw_cursor()
+			if Input.is_action_just_pressed("ui_accept"):
+				if  !gameover:
+					if selected == 5:
+						$pick.play()
+						grab_block()
+					else:
+						drop_block()
+						check_hit()
+					draw_cursor()
+				else:
+					gameover = false
+					$label_gameover.visible = false
+					$ProgressBar.value = 6
+					new_row.clear()
+					col = 0
+					selected = 5
+					score = 0
+					update_score()
+					for y in range(8):
+						for x in range(7):
+							$TileMap.set_cell(x, y, -1)
+					_ready()
+					$Timer.start()
 
 func _on_Timer_timeout():
 	if $ProgressBar.value == 0:
@@ -187,5 +214,5 @@ func _on_Timer_timeout():
 		draw_cursor()
 		check_hit()
 		draw_cursor()
-		$ProgressBar.value = 6
+		$ProgressBar.value = $ProgressBar.max_value
 	$ProgressBar.value -= 1
