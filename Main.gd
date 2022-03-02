@@ -10,16 +10,6 @@ signal blinked
 
 func _ready():
 	randomize()
-	
-	if OS.has_feature("HTML5"):
-		$Button.visible = true
-		$Button2.visible = true
-		$Button3.visible = true
-	else:
-		$Button.visible = false
-		$Button2.visible = false
-		$Button3.visible = false
-
 	generate_new_row()
 	add_row()
 	generate_new_row()
@@ -40,7 +30,6 @@ func generate_new_row():
 				n = randi() % 5
 			new_row.append(n)
 			last_dice = n
-	for i in range(7):
 		$TileMap.set_cell(i, 10, new_row[i])
 	$new_line.play()
 
@@ -122,7 +111,7 @@ func check_hit():
 		$TileMap.set_cellv(destroy, -1)
 		spawn_effect(destroy, block_color)
 		score += 1
-		update_score()
+	update_score()
 
 func gravity():
 	var fall = false
@@ -147,10 +136,11 @@ func spawn_effect(pos : Vector2, block_color):
 func _input(event):
 	if Input.is_action_just_pressed("ui_down") and !gameover:
 		add_row()
+		gravity()
 		generate_new_row()
 		check_hit()
 		draw_cursor()
-		$ProgressBar.value = 5
+		$ProgressBar.value = 6
 	if Input.is_action_just_pressed("ui_right") and !gameover:
 		col += 1
 		if col > 6: col = 0
@@ -177,7 +167,7 @@ func _input(event):
 		else:
 			gameover = false
 			$label_gameover.visible = false
-			$ProgressBar.value = 5
+			$ProgressBar.value = 6
 			new_row.clear()
 			col = 0
 			selected = 5
@@ -192,46 +182,10 @@ func _input(event):
 func _on_Timer_timeout():
 	if $ProgressBar.value == 0:
 		add_row()
+		gravity()
 		generate_new_row()
 		draw_cursor()
 		check_hit()
 		draw_cursor()
-		$ProgressBar.value = 5
+		$ProgressBar.value = 6
 	$ProgressBar.value -= 1
-
-
-func _on_Button_pressed():
-	col -= 1
-	if col < 0: col = 6
-	draw_cursor()
-
-
-func _on_Button3_pressed():
-	col += 1
-	if col > 6: col = 0
-	draw_cursor()
-
-func _on_Button2_pressed():
-	if  !gameover:
-		if selected == 5:
-			$pick.play()
-			grab_block()
-		else:
-			drop_block()
-			check_hit()
-		draw_cursor()
-	else:
-		gameover = false
-		$label_gameover.visible = false
-		$ProgressBar.value = 5
-		new_row.clear()
-		col = 0
-		selected = 5
-		score = 0
-		update_score()
-		for y in range(9):
-			for x in range(7):
-				$TileMap.set_cell(x, y, -1)
-		_ready()
-		$Timer.start()
-

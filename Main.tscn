@@ -134,7 +134,7 @@ __meta__ = {
 }
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 1.1
+wait_time = 1.15
 autostart = true
 
 [node name="Label" type="Label" parent="."]
@@ -151,9 +151,8 @@ __meta__ = {
 
 [node name="label_gameover" type="Label" parent="."]
 visible = false
-margin_left = 48.0
 margin_top = 120.0
-margin_right = 144.0
+margin_right = 176.0
 margin_bottom = 136.0
 theme = SubResource( 3 )
 text = "GAME OVER"
@@ -175,37 +174,4 @@ stream = ExtResource( 8 )
 [node name="score" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 10 )
 
-[node name="Button" type="Button" parent="."]
-margin_left = 16.0
-margin_top = 224.0
-margin_right = 48.0
-margin_bottom = 244.0
-text = "<"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Button2" type="Button" parent="."]
-margin_left = 112.0
-margin_top = 224.0
-margin_right = 160.0
-margin_bottom = 244.0
-text = "#"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Button3" type="Button" parent="."]
-margin_left = 56.0
-margin_top = 224.0
-margin_right = 88.0
-margin_bottom = 244.0
-text = ">"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
-[connection signal="pressed" from="Button2" to="." method="_on_Button2_pressed"]
-[connection signal="pressed" from="Button3" to="." method="_on_Button3_pressed"]
