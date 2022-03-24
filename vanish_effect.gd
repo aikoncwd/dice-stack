@@ -4,7 +4,6 @@ export var block_color : int
 
 func _ready():
 	if block_color == -1:
-		print("ERROR -1 EFFECT")
 		finish()
 		return
 		

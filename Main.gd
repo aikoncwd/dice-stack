@@ -6,6 +6,9 @@ var selected = 5
 var score = 0
 var gameover = false
 var gamestate = "title"
+var gamemodes = ["time attack", "speedrun", "practice"]
+var selected_label = 0
+var gamemode = gamemodes[selected_label]
 
 signal animation_finish
 
@@ -99,6 +102,13 @@ func check_hit():
 					scored = true
 	
 	if scored:
+		match destroy_blocks.size():
+			3:
+				$score.pitch_scale = 1
+			6:
+				$score.pitch_scale = 1.25
+			_:
+				$score.pitch_scale = 1.5
 		$score.play()
 	else:
 		$drop.play()
@@ -145,6 +155,7 @@ func _input(event):
 		"title":
 			if Input.is_action_just_pressed("ui_accept"):
 				$box_titulo.visible = false
+				$menu.visible = false
 				yield(get_tree().create_timer(0.5), "timeout")
 				animation()
 				yield(self, "animation_finish")
@@ -164,6 +175,38 @@ func _input(event):
 				$Timer.start()
 				
 				gamestate = "gaming"
+			if Input.is_action_just_pressed("ui_down"):
+				selected_label += 1
+				if selected_label > 2: selected_label = 0
+				match selected_label:
+					0:
+						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
+						$menu/label_speedrun.text = gamemodes[1]
+						$menu/label_practice.text = gamemodes[2]
+					1:
+						$menu/label_timeattack.text = gamemodes[0]
+						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
+						$menu/label_practice.text = gamemodes[2]
+					2:
+						$menu/label_timeattack.text = gamemodes[0]
+						$menu/label_speedrun.text = gamemodes[1]
+						$menu/label_practice.text = ">" + gamemodes[2] + "<"
+			if Input.is_action_just_pressed("ui_up"):
+				selected_label -= 1
+				if selected_label < 0: selected_label = 2
+				match selected_label:
+					0:
+						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
+						$menu/label_speedrun.text = gamemodes[1]
+						$menu/label_practice.text = gamemodes[2]
+					1:
+						$menu/label_timeattack.text = gamemodes[0]
+						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
+						$menu/label_practice.text = gamemodes[2]
+					2:
+						$menu/label_timeattack.text = gamemodes[0]
+						$menu/label_speedrun.text = gamemodes[1]
+						$menu/label_practice.text = ">" + gamemodes[2] + "<"
 		"gaming":
 			if Input.is_action_just_pressed("ui_down") and !gameover:
 				add_row()
@@ -171,6 +214,7 @@ func _input(event):
 				generate_new_row()
 				check_hit()
 				draw_cursor()
+				if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 2
 				$ProgressBar.value = $ProgressBar.max_value
 			if Input.is_action_just_pressed("ui_right") and !gameover:
 				col += 1
@@ -187,7 +231,7 @@ func _input(event):
 				col = 0
 				draw_cursor()
 			if Input.is_action_just_pressed("ui_accept"):
-				if  !gameover:
+				if !gameover:
 					if selected == 5:
 						$pick.play()
 						grab_block()
@@ -198,7 +242,7 @@ func _input(event):
 				else:
 					gameover = false
 					$label_gameover.visible = false
-					$ProgressBar.value = 6
+					$ProgressBar.value = $ProgressBar.max_value
 					new_row.clear()
 					col = 0
 					selected = 5
@@ -218,5 +262,6 @@ func _on_Timer_timeout():
 		draw_cursor()
 		check_hit()
 		draw_cursor()
+		if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 2
 		$ProgressBar.value = $ProgressBar.max_value
 	$ProgressBar.value -= 1
