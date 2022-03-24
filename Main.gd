@@ -50,7 +50,7 @@ func add_row():
 					$label_gameover.visible = true
 					return
 	for i in range(7):
-		$TileMap.set_cell(i, 8, new_row[i])
+		$TileMap.set_cell(i, 8, new_row[i]) #ERROR AFTER NEWGAME
 
 func draw_cursor():
 	var top_block = get_top_block()
@@ -214,7 +214,7 @@ func _input(event):
 				generate_new_row()
 				check_hit()
 				draw_cursor()
-				if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 2
+				if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 1
 				$ProgressBar.value = $ProgressBar.max_value
 			if Input.is_action_just_pressed("ui_right") and !gameover:
 				col += 1
@@ -262,6 +262,6 @@ func _on_Timer_timeout():
 		draw_cursor()
 		check_hit()
 		draw_cursor()
-		if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 2
+		if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 1
 		$ProgressBar.value = $ProgressBar.max_value
 	$ProgressBar.value -= 1
