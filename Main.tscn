@@ -179,9 +179,8 @@ stream = ExtResource( 10 )
 
 [node name="box_titulo" type="Node2D" parent="."]
 
-[node name="titulo" type="Sprite" parent="box_titulo"]
-position = Vector2( 88, 64 )
-scale = Vector2( 0.3, 0.3 )
+[node name="title" type="Sprite" parent="box_titulo"]
+position = Vector2( 88, 72 )
 texture = ExtResource( 11 )
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

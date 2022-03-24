@@ -140,19 +140,23 @@ func animation():
 			yield(get_tree().create_timer(0.05), "timeout")
 	emit_signal("animation_finish")
 
-
 func _input(event):
 	match gamestate:
 		"title":
 			if Input.is_action_just_pressed("ui_accept"):
 				$box_titulo.visible = false
+				yield(get_tree().create_timer(0.5), "timeout")
 				animation()
 				yield(self, "animation_finish")
+				yield(get_tree().create_timer(0.5), "timeout")
 				
 				generate_new_row(true)
+				yield(get_tree().create_timer(0.25), "timeout")
 				add_row()
 				generate_new_row(true)
+				yield(get_tree().create_timer(0.25), "timeout")
 				draw_cursor()
+				yield(get_tree().create_timer(0.25), "timeout")
 				
 				$crosshair.visible = true
 				$ProgressBar.visible = true
