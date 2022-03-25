@@ -9,11 +9,18 @@ var gamestate = "title"
 var gamemodes = ["time attack", "speedrun", "practice"]
 var selected_label = 0
 var gamemode = gamemodes[selected_label]
+var speedrun_start = false
+var time : float = 0.0
 
 signal animation_finish
 
 func _ready():
 	randomize()
+
+func _process(delta):
+	if speedrun_start:
+		time += delta
+		update_score()
 
 func generate_new_row(starting = false):
 	var last_dice
@@ -132,7 +139,11 @@ func gravity():
 	if fall: check_hit()
 
 func update_score():
-	$label_score.text = str(score)
+	if gamemode == "speedrun":
+		$label_timer.text = str("%2.2f" % time)
+		$label_completed.text = str(score) + "%"
+	else:
+		$label_score.text = str(score)
 
 func spawn_effect(pos : Vector2, block_color):
 	var effect = preload("res://vanish_effect.tscn").instance()
@@ -154,6 +165,8 @@ func _input(event):
 	match gamestate:
 		"title":
 			if Input.is_action_just_pressed("ui_accept"):
+				gamemode = gamemodes[selected_label]
+				print("New game: " + gamemode)
 				$box_titulo.visible = false
 				$menu.visible = false
 				yield(get_tree().create_timer(0.5), "timeout")
@@ -162,17 +175,21 @@ func _input(event):
 				yield(get_tree().create_timer(0.5), "timeout")
 				
 				generate_new_row(true)
-				yield(get_tree().create_timer(0.25), "timeout")
 				add_row()
 				generate_new_row(true)
-				yield(get_tree().create_timer(0.25), "timeout")
 				draw_cursor()
 				yield(get_tree().create_timer(0.25), "timeout")
 				
 				$crosshair.visible = true
-				$ProgressBar.visible = true
 				$label_score.visible = true
-				$Timer.start()
+				if gamemode == "time attack":
+					$ProgressBar.visible = true
+					$Timer.start()
+				if gamemode == "speedrun":
+					$label_score.visible = false
+					$label_completed.visible = true
+					$label_timer.visible = true
+					speedrun_start = true
 				
 				gamestate = "gaming"
 			if Input.is_action_just_pressed("ui_down"):
@@ -183,14 +200,17 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
+						$menu/label_max_score.text = "best: 100"
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
+						$menu/label_max_score.text = "best: 100"
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = ">" + gamemodes[2] + "<"
+						$menu/label_max_score.text = "best: you <3"
 			if Input.is_action_just_pressed("ui_up"):
 				selected_label -= 1
 				if selected_label < 0: selected_label = 2
@@ -199,14 +219,17 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
+						$menu/label_max_score.text = "best: 100"
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
+						$menu/label_max_score.text = "best: 100"
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = ">" + gamemodes[2] + "<"
+						$menu/label_max_score.text = "best: you <3"
 		"gaming":
 			if Input.is_action_just_pressed("ui_down") and !gameover:
 				add_row()
@@ -265,3 +288,6 @@ func _on_Timer_timeout():
 		if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 1
 		$ProgressBar.value = $ProgressBar.max_value
 	$ProgressBar.value -= 1
+
+func _on_Speedrun_timeout():
+	pass

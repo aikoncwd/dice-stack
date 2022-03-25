@@ -139,9 +139,25 @@ theme = ExtResource( 6 )
 text = "0"
 align = 1
 valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+
+[node name="label_timer" type="Label" parent="."]
+visible = false
+margin_left = 32.0
+margin_right = 144.0
+margin_bottom = 32.0
+theme = ExtResource( 6 )
+text = "26.74"
+valign = 1
+
+[node name="label_completed" type="Label" parent="."]
+visible = false
+margin_left = 32.0
+margin_right = 144.0
+margin_bottom = 32.0
+theme = ExtResource( 6 )
+text = "67%"
+align = 2
+valign = 1
 
 [node name="label_gameover" type="Label" parent="."]
 visible = false
@@ -176,38 +192,45 @@ texture = ExtResource( 11 )
 
 [node name="menu" type="Node2D" parent="."]
 
-[node name="label_max_score" type="Label" parent="menu"]
+[node name="background" type="ColorRect" parent="menu"]
 margin_left = 32.0
 margin_top = 128.0
 margin_right = 144.0
-margin_bottom = 136.0
+margin_bottom = 208.0
+color = Color( 0.247059, 0.247059, 0.247059, 1 )
+
+[node name="label_max_score" type="Label" parent="menu"]
+margin_left = 32.0
+margin_top = 136.0
+margin_right = 144.0
+margin_bottom = 144.0
 theme = ExtResource( 6 )
-text = "Max score: 100"
+text = "best: 100"
 align = 1
 
 [node name="label_timeattack" type="Label" parent="menu"]
 margin_left = 32.0
-margin_top = 152.0
+margin_top = 160.0
 margin_right = 144.0
-margin_bottom = 160.0
+margin_bottom = 168.0
 theme = ExtResource( 6 )
 text = ">time attack<"
 align = 1
 
 [node name="label_speedrun" type="Label" parent="menu"]
 margin_left = 32.0
-margin_top = 168.0
+margin_top = 176.0
 margin_right = 144.0
-margin_bottom = 176.0
+margin_bottom = 184.0
 theme = ExtResource( 6 )
 text = "speedrun"
 align = 1
 
 [node name="label_practice" type="Label" parent="menu"]
 margin_left = 32.0
-margin_top = 184.0
+margin_top = 192.0
 margin_right = 144.0
-margin_bottom = 192.0
+margin_bottom = 200.0
 theme = ExtResource( 6 )
 text = "practice"
 align = 1
