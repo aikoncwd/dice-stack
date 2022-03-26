@@ -11,6 +11,7 @@ var selected_label = 0
 var gamemode = gamemodes[selected_label]
 var speedrun_start = false
 var time : float = 0.0
+var animating = false
 
 signal animation_finish
 
@@ -41,8 +42,8 @@ func generate_new_row(starting = false):
 	if !starting: $new_line.play()
 
 func add_row():
-	for effect in get_tree().get_nodes_in_group("effects"):
-		effect.queue_free()
+#	for effect in get_tree().get_nodes_in_group("effects"):
+#		effect.queue_free()
 	
 	for y in range(9):
 		for x in range(7):
@@ -53,11 +54,14 @@ func add_row():
 					$TileMap.set_cell(x, y, -1)
 				else:
 					gameover = true
+					speedrun_start = false
 					$Timer.stop()
+					$label_gameover.text = "GAME OVER"
 					$label_gameover.visible = true
+					$crosshair.visible = false
 					return
 	for i in range(7):
-		$TileMap.set_cell(i, 8, new_row[i]) #ERROR AFTER NEWGAME
+		$TileMap.set_cell(i, 8, new_row[i])
 
 func draw_cursor():
 	var top_block = get_top_block()
@@ -136,10 +140,20 @@ func gravity():
 				$TileMap.set_cell(x, y, block)
 				$TileMap.set_cell(x, y - 1, -1)
 				fall = true
-	if fall: check_hit()
+	if fall:
+		gravity()
+		check_hit()
 
 func update_score():
 	if gamemode == "speedrun":
+		if score >= 100:
+			speedrun_start = false
+			gameover = true
+			$crosshair.visible = false
+			$label_gameover.text = "CONGRATULATIONS!"
+			$label_gameover.visible = true
+			score = 100
+			
 		$label_timer.text = str("%2.2f" % time)
 		$label_completed.text = str(score) + "%"
 	else:
@@ -164,7 +178,8 @@ func animation():
 func _input(event):
 	match gamestate:
 		"title":
-			if Input.is_action_just_pressed("ui_accept"):
+			if Input.is_action_just_pressed("ui_accept") and !animating:
+				animating = true
 				gamemode = gamemodes[selected_label]
 				print("New game: " + gamemode)
 				$box_titulo.visible = false
@@ -173,7 +188,6 @@ func _input(event):
 				animation()
 				yield(self, "animation_finish")
 				yield(get_tree().create_timer(0.5), "timeout")
-				
 				generate_new_row(true)
 				add_row()
 				generate_new_row(true)
@@ -190,8 +204,8 @@ func _input(event):
 					$label_completed.visible = true
 					$label_timer.visible = true
 					speedrun_start = true
-				
 				gamestate = "gaming"
+				animating = false
 			if Input.is_action_just_pressed("ui_down"):
 				selected_label += 1
 				if selected_label > 2: selected_label = 0
@@ -200,12 +214,12 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 100"
+						$menu/label_max_score.text = "best: 0"
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 100"
+						$menu/label_max_score.text = "best: 0"
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
@@ -219,12 +233,12 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 100"
+						$menu/label_max_score.text = "best: 0"
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 100"
+						$menu/label_max_score.text = "best: 0"
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
@@ -263,19 +277,31 @@ func _input(event):
 						check_hit()
 					draw_cursor()
 				else:
-					gameover = false
-					$label_gameover.visible = false
-					$ProgressBar.value = $ProgressBar.max_value
-					new_row.clear()
-					col = 0
-					selected = 5
-					score = 0
-					update_score()
-					for y in range(8):
-						for x in range(7):
-							$TileMap.set_cell(x, y, -1)
-					_ready()
-					$Timer.start()
+					show_title()
+
+func show_title():
+	for y in range(-2, 11):
+		for x in range(-2, 7):
+			$TileMap.set_cell(x, y, 5)
+	$label_score.visible = false
+	$label_gameover.visible = false
+	$label_timer.visible = false
+	$label_completed.visible = false
+	$crosshair.visible = false
+	$menu.visible = true
+	$box_titulo.visible = true
+	$ProgressBar.visible = false
+	$ProgressBar.value = $ProgressBar.max_value
+	time = 0
+	score = 0
+	col = 0
+	selected = 5
+	new_row.clear()
+	update_score()
+	gameover = false
+	speedrun_start = false
+	animating = false
+	gamestate = "title"
 
 func _on_Timer_timeout():
 	if $ProgressBar.value == 0:
@@ -288,6 +314,3 @@ func _on_Timer_timeout():
 		if $ProgressBar.max_value > 40: $ProgressBar.max_value -= 1
 		$ProgressBar.value = $ProgressBar.max_value
 	$ProgressBar.value -= 1
-
-func _on_Speedrun_timeout():
-	pass
