@@ -89,9 +89,14 @@ func drop_block():
 	var top_block = get_top_block() - 1
 	if top_block == 11:
 		$TileMap.set_cell(col, 8, selected)
+	elif top_block == -1:
+		#Can't drop a block if the column is full
+		return
 	else:
 		$TileMap.set_cell(col, top_block, selected)
 	selected = 5
+	$TileMap.set_cell(col, -1, selected)
+	check_hit()
 
 func check_hit():
 	var scored = false
@@ -274,7 +279,6 @@ func _input(event):
 						grab_block()
 					else:
 						drop_block()
-						check_hit()
 					draw_cursor()
 				else:
 					show_title()
