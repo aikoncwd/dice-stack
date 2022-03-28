@@ -12,16 +12,44 @@ var gamemode = gamemodes[selected_label]
 var speedrun_start = false
 var time : float = 0.0
 var animating = false
-
 signal animation_finish
+var scores = {
+	"time_attack" : 0,
+	"speedrun" : 9999
+}
 
 func _ready():
 	randomize()
+	check_savegame()
+	load_scores()
+	$menu/label_max_score.text = "best: " + str(scores["time_attack"])
 
 func _process(delta):
 	if speedrun_start:
 		time += delta
 		update_score()
+
+func check_savegame():
+	var save_file : File = File.new()
+	if !save_file.file_exists("user://scores.txt"): save_scores()
+
+func update_scores():
+	if gamemode == "time attack":
+		if score > scores["time_attack"]: scores["time_attack"] = score
+	if gamemode == "speedrun":
+		if time < scores["speedrun"]: scores["speedrun"] = time
+
+func save_scores():
+	var save_file : File = File.new()
+	save_file.open("user://scores.txt", File.WRITE)
+	save_file.store_string(to_json(scores))
+	save_file.close()
+
+func load_scores():
+	var load_file : File = File.new()
+	load_file.open("user://scores.txt", File.READ)
+	while not load_file.eof_reached():
+		scores = parse_json(load_file.get_line())
 
 func generate_new_row(starting = false):
 	var last_dice
@@ -53,12 +81,16 @@ func add_row():
 					$TileMap.set_cell(x, y-1, block)
 					$TileMap.set_cell(x, y, -1)
 				else:
+					$music.stop()
+					update_scores()
+					save_scores()
 					gameover = true
 					speedrun_start = false
 					$Timer.stop()
 					$label_gameover.text = "GAME OVER"
 					$label_gameover.visible = true
 					$crosshair.visible = false
+					$gameover.play()
 					return
 	for i in range(7):
 		$TileMap.set_cell(i, 8, new_row[i])
@@ -158,6 +190,8 @@ func update_score():
 			$label_gameover.text = "CONGRATULATIONS!"
 			$label_gameover.visible = true
 			score = 100
+			update_scores()
+			save_scores()
 			
 		$label_timer.text = str("%2.2f" % time)
 		$label_completed.text = str(score) + "%"
@@ -184,6 +218,7 @@ func _input(event):
 	match gamestate:
 		"title":
 			if Input.is_action_just_pressed("ui_accept") and !animating:
+				$score.play()
 				animating = true
 				gamemode = gamemodes[selected_label]
 				print("New game: " + gamemode)
@@ -211,6 +246,7 @@ func _input(event):
 					speedrun_start = true
 				gamestate = "gaming"
 				animating = false
+				$music.play()
 			if Input.is_action_just_pressed("ui_down"):
 				selected_label += 1
 				if selected_label > 2: selected_label = 0
@@ -219,17 +255,18 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 0"
+						$menu/label_max_score.text = "best: " + str(scores["time_attack"])
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 0"
+						$menu/label_max_score.text = "best: " + str("%2.2f" % scores["speedrun"])
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = ">" + gamemodes[2] + "<"
 						$menu/label_max_score.text = "best: you <3"
+				$pick.play()
 			if Input.is_action_just_pressed("ui_up"):
 				selected_label -= 1
 				if selected_label < 0: selected_label = 2
@@ -238,17 +275,18 @@ func _input(event):
 						$menu/label_timeattack.text = ">" + gamemodes[0] + "<"
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 0"
+						$menu/label_max_score.text = "best: " + str(scores["time_attack"])
 					1:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = ">" + gamemodes[1] + "<"
 						$menu/label_practice.text = gamemodes[2]
-						$menu/label_max_score.text = "best: 0"
+						$menu/label_max_score.text = "best: " + str("%2.2f" % scores["speedrun"])
 					2:
 						$menu/label_timeattack.text = gamemodes[0]
 						$menu/label_speedrun.text = gamemodes[1]
 						$menu/label_practice.text = ">" + gamemodes[2] + "<"
 						$menu/label_max_score.text = "best: you <3"
+				$pick.play()
 		"gaming":
 			if Input.is_action_just_pressed("ui_down") and !gameover:
 				add_row()
@@ -281,6 +319,7 @@ func _input(event):
 						drop_block()
 					draw_cursor()
 				else:
+					$music.stop()
 					show_title()
 
 func show_title():
@@ -302,6 +341,8 @@ func show_title():
 	selected = 5
 	new_row.clear()
 	update_score()
+	$menu/label_max_score.text = "best: " + str(scores["time_attack"])
+	$menu/label_max_score.text = "best: " + str("%2.2f" % scores["speedrun"])
 	gameover = false
 	speedrun_start = false
 	animating = false
